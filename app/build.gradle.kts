@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -31,7 +34,22 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
+        compose = true
+        buildConfig = true
         viewBinding = true
+    }
+
+    buildTypes.configureEach {
+        buildConfigField(
+            "String",
+            "SUPABASE_URL",
+            "\"${providers.gradleProperty("supabaseUrl").orNull.orEmpty()}\""
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${providers.gradleProperty("supabaseAnonKey").orNull.orEmpty()}\""
+        )
     }
 }
 
@@ -43,9 +61,22 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.recyclerview)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.material)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.hilt.android)
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.android)
+    ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
